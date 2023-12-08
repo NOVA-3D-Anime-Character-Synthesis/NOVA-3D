@@ -1,0 +1,44 @@
+{
+    "fp16": {
+        "enabled": "true",
+        "loss_scale": 0,
+        "loss_scale_window": 1000,
+        "initial_scale_power": 16,
+        "hysteresis": 2,
+        "min_loss_scale": 1
+    },
+
+    "optimizer": {
+        "type": "Adam",
+        "params": {
+          "lr":  2e-5,
+          "betas": [
+            0.8,
+            0.999
+          ],
+          "eps": 1e-8,
+          "weight_decay": 3e-7
+        }
+    },
+
+    "scheduler": {
+        "type": "OneCycle",
+        "params": {
+            "cycle_max_lr": 2e-4,
+            "cycle_min_lr": 2e-5,
+            "cycle_first_step_size": 5000
+        }
+    },
+
+    "zero_optimization": {
+        "stage": 1,
+        "overlap_comm": true,
+        "contiguous_gradients": true
+        
+    },
+
+    "gradient_accumulation_steps": 1,
+    "steps_per_print": 2000,
+    "train_batch_size": 16,
+    "wall_clock_breakdown": false
+}

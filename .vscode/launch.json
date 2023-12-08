@@ -1,0 +1,927 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [        
+
+        {
+            "name": "Python: panic3d",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_train.eg3dc.trainers.train_eclustrousC",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"A100"},
+            "args": [
+            "--name=ecrutileE_eclustrousC_n120",
+            "--training_loop_version=training_loop_v0",
+            "--loss_module=training.loss.StyleGAN2LossOrthoCondA",
+            "--cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=rutileEB",
+            
+            "--gpus=2",
+            "--batch=8",
+            "--kimg=25000",
+            "--snap=2",
+            
+            "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+        
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=256",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=96",
+            "--neural_rendering_resolution_final=96",
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+         
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+        ],
+            "justMyCode": true
+        },
+        {
+            "name": "Python: panic3d_7",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_train.eg3dc.trainers.train_eclustrousC",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"A100"},
+            "args": [
+            "--name=ecrutileE_eclustrousC_n120",
+            "--training_loop_version=training_loop_v0",
+            "--loss_module=training.loss.StyleGAN2LossOrthoCondA",
+            "--cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=rutileEB",
+            
+            "--gpus=2",
+            "--batch=8",
+            "--kimg=25000",
+            "--snap=8",
+            
+            "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+        
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=256",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=96",
+            "--neural_rendering_resolution_final=96",
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+         
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+        ],
+            "justMyCode": true
+        },
+        {
+            "name": "Python: multi-view-panic3d",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_train.eg3dc.trainers.train_multi_view_panic3d",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+            "--name=ecrutileE_eclustrousC_n120",
+            "--training_loop_version=training_loop_v1",
+            "--loss_module=training.loss.StyleGAN2LossMultiOrthoCond",
+            "--cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--multi_view_cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4,ortho_back.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=rutileEB",
+            
+            "--gpus=2",
+            "--batch=8",
+            "--kimg=25000",
+            "--snap=10",
+            
+            "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+        
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=256",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=96",
+            "--neural_rendering_resolution_final=96",
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+         
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+        ],
+            "justMyCode": true
+        },
+        {
+            "name": "Python: mv_generate",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_scripts.eval.mv_generate",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": []
+        },
+        {
+            "name": "Python: human_generate_7",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_scripts.eval.human_generate",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+                "--generator_module=training.triplane.TriPlaneGenerator_v1",
+                "--dataset=human",
+                "--inferquery=human_multi_panic3d-00056-000040",
+            ]
+        },
+        {
+            "name": "Python: human_generate",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_scripts.eval.human_generate",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+                "--generator_module=training.triplane.TriPlaneGenerator_v1",
+                "--inferquery=human_multi_panic3d-00056-000040",
+            ]
+        },
+        {
+            "name": "Python: human_measure",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_scripts.eval.human_measure",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+                "--inferquery=human_multi_panic3d-00057-000880",
+            ]
+        },
+        {
+            "name": "Python: generate_human_feature",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_scripts.train.generate_human_feature",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": []
+        },
+        {
+            "name": "Python: mv-panic3d-mask-encoder",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_train.eg3dc.trainers.train_multi_view_panic3d_mask_encoder",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+            "--name=multi_panic3d",
+            "--training_loop_version=training_loop_v2",
+            "--loss_module=training.loss.StyleGAN2LossMultiMaskOrthoCond",
+            "--generator_module=training.triplane.TriPlaneGenerator_v0",
+            "--generator_backbone=training.generator.Generator_v0",
+            "--encoder_module=training.encoder.Encoder_v1",
+            "--discriminator_module=training.dual_discriminator.MaskDualDiscriminator",
+            "--cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--multi_view_cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4,ortho_back.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=rutileEB",
+            // "--metrics=fid100", // fid50k_full
+            "--gpus=2",
+            "--batch=2",
+            "--kimg=25000",
+            "--snap=10",
+            
+
+            "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+        
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=256",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=96", // 128
+            "--neural_rendering_resolution_final=96", // 128
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            "--seg_gamma=100",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+            "--reg_type=l1", // 'l1', 'l1-alt', 'monotonic-detach', 'monotonic-fixed', 'total-variation'
+
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+            ],
+        },
+        {
+            "name": "Python: mv-panic3d-mask-encoder_7",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_train.eg3dc.trainers.train_multi_view_panic3d_mask_encoder",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+            "--name=multi_panic3d",
+            "--training_loop_version=training_loop_v2",
+            "--loss_module=training.loss.StyleGAN2LossMultiMaskOrthoCond",
+            "--generator_module=training.triplane.TriPlaneGenerator_v0",
+            "--generator_backbone=training.generator.Generator_v0",
+            "--encoder_module=training.encoder.Encoder_v1",
+            "--encoder_config=/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-/_train/swin_transformer/configs/swinv2.yaml",
+            "--discriminator_module=training.dual_discriminator.MaskDualDiscriminator",
+            "--cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--multi_view_cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4,ortho_back.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=rutileEB",
+            // "--metrics=fid100", // fid50k_full
+            "--gpus=2",
+            "--batch=8",
+            "--kimg=25000",
+            "--snap=10",
+            
+            "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+        
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=256",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=96", // 128
+            "--neural_rendering_resolution_final=96", // 128
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            "--seg_gamma=100",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+            "--reg_type=l1", // 'l1', 'l1-alt', 'monotonic-detach', 'monotonic-fixed', 'total-variation'
+
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+            ],
+        },
+        {
+            "name": "Python: human_mv-panic3d-mask-encoder",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_train.eg3dc.trainers.train_multi_view_panic3d_mask_encoder",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+            "--name=human_multi_panic3d",
+            "--training_loop_version=training_loop_v2",
+            "--loss_module=training.loss.StyleGAN2LossMultiMaskOrthoCond_human",
+            "--generator_module=training.triplane.TriPlaneGenerator_v0",
+            // "--generator_backbone=training.generator.Generator_v0",
+            "--encoder_module=training.encoder.Encoder_v1",
+            "--encoder_config=/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-/_train/swin_transformer/configs/swinv2.yaml",
+            "--discriminator_module=training.dual_discriminator.MaskDualDiscriminator",
+            "--cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--multi_view_cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4,ortho_back.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=human_rutileEB",
+            // "--metrics=fid100", // fid50k_full
+            "--gpus=2",
+            "--batch=8",
+            "--kimg=25000",
+            "--snap=10",
+            
+            "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+        
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=512",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=128", // 128
+            "--neural_rendering_resolution_final=128", // 128
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            "--seg_gamma=100",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+            "--reg_type=l1", // 'l1', 'l1-alt', 'monotonic-detach', 'monotonic-fixed', 'total-variation'
+
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+            ],
+        },
+        {
+            "name": "Python: human_mv-panic3d-mask-encoder_7",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_train.eg3dc.trainers.train_multi_view_panic3d_mask_encoder",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+            "--name=human_multi_panic3d",
+            "--training_loop_version=training_loop_human",
+            "--loss_module=training.loss.StyleGAN2LossMultiMaskOrthoCond_human",
+            "--generator_module=training.triplane.TriPlaneGenerator_v0",
+            "--generator_backbone=training.generator.Generator_v0",
+            "--encoder_module=training.encoder.Encoder_v1",
+            "--encoder_config=/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-/_train/swin_transformer/configs/swinv2.yaml",
+            "--discriminator_module=training.dual_discriminator.MaskDualDiscriminator",
+            "--cond_mode=ortho_front.cond_img_norm_4.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--multi_view_cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4,ortho_back.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=human_rutileEB",
+            // "--metrics=fid100", // fid50k_full
+            "--gpus=2",
+            "--batch=8",
+            "--kimg=25000",
+            "--snap=10",
+            
+            // "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+            "--resume=None",
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=512",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=128", // 128
+            "--neural_rendering_resolution_final=128", // 128
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            "--seg_gamma=100",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+            "--reg_type=l1", // 'l1', 'l1-alt', 'monotonic-detach', 'monotonic-fixed', 'total-variation'
+
+            // "--lambda_gcond_rand_lpips=40.0",
+            // "--lambda_gcond_rand_l1=8.0",
+            // "--lambda_gcond_rand_alpha_l2=2.0",
+            // "--lambda_gcond_rand_depth_l2=2000.0",
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+            ],
+        },
+        {
+            "name": "Python: human_mv-panic3d-mask-encoder_4A100",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_train.eg3dc.trainers.train_multi_view_panic3d_mask_encoder",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+            "--name=human_multi_panic3d",
+            "--training_loop_version=training_loop_human",
+            "--loss_module=training.loss.StyleGAN2LossMultiMaskOrthoCond_human",
+            "--generator_module=training.triplane.TriPlaneGenerator_v1",
+            "--generator_backbone=training.generator.Generator_v1",
+            "--encoder_module=training.encoder.Encoder_v1",
+            "--encoder_config=/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-/_train/swin_transformer/configs/swinv2.yaml",
+            "--discriminator_module=training.dual_discriminator.MaskDualDiscriminator",
+            "--cond_mode=ortho_front.cond_img_norm_4.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--multi_view_cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4,ortho_back.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=human_rutileEB",
+            // "--metrics=fid100", // fid50k_full
+            "--gpus=2",
+            "--batch=8",
+            "--kimg=25000",
+            "--snap=10",
+            
+            // "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+            "--resume=None",
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=512",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=96", // 128
+            "--neural_rendering_resolution_final=96", // 128
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            "--seg_gamma=1.0",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+            "--reg_type=l1", // 'l1', 'l1-alt', 'monotonic-detach', 'monotonic-fixed', 'total-variation'
+
+            "--lambda_gcond_rand_lpips=40.0",
+            "--lambda_gcond_rand_l1=8.0",
+            "--lambda_gcond_rand_alpha_l2=2.0",
+            "--lambda_gcond_rand_depth_l2=2000.0",
+
+
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+            ],
+        },
+        {
+            "name": "Python: humanB_mv-panic3d-mask-encoder_B",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_train.eg3dc.trainers.train_humanB",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "2,3",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+            "--name=humanB_multi_panic3d",
+            "--training_loop_version=training_loop_humanB",
+            "--loss_module=training.loss.StyleGAN2LossMultiMaskOrthoCond_humanB",
+            "--generator_module=training.triplane.TriPlaneGenerator_humanB",
+            "--generator_backbone=training.generator.Generator_humanB",
+            "--encoder_module=training.encoder.Encoder_v1",
+            "--encoder_config=/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-/_train/swin_transformer/configs/swinv2.yaml",
+            "--discriminator_module=training.dual_discriminator.MaskDualDiscriminator_humanB",
+            "--cond_mode=ortho_front.cond_img_norm_4.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--multi_view_cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4,ortho_back.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=human_rutileEB",
+            // "--metrics=fid100", // fid50k_full
+            "--gpus=2",
+            "--batch=8",
+            "--kimg=25000",
+            "--snap=10",
+            
+            // "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+            "--resume=None",
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=512",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=128", // 128
+            "--neural_rendering_resolution_final=128", // 128
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            "--seg_gamma=1.0",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+            "--reg_type=l1", // 'l1', 'l1-alt', 'monotonic-detach', 'monotonic-fixed', 'total-variation'
+
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+            ],
+        },
+        {
+            "name": "Python: humanB_mv-panic3d-mask-encoder_B_01",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_train.eg3dc.trainers.train_humanB",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+            "--name=humanB_multi_panic3d",
+            "--training_loop_version=training_loop_humanB",
+            "--loss_module=training.loss.StyleGAN2LossMultiMaskOrthoCond_humanB",
+            "--generator_module=training.triplane.TriPlaneGenerator_humanB",
+            "--generator_backbone=training.generator.Generator_v1",
+            "--encoder_module=training.encoder.Encoder_v1",
+            "--encoder_config=/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-/_train/swin_transformer/configs/swinv2.yaml",
+            "--discriminator_module=training.dual_discriminator.MaskDualDiscriminator",
+            "--cond_mode=ortho_front.cond_img_norm_4.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--multi_view_cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4,ortho_back.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=human_rutileEB",
+            // "--metrics=fid100", // fid50k_full
+            "--gpus=2",
+            "--batch=8",
+            "--kimg=25000",
+            "--snap=10",
+            
+            // "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+            "--resume=None",
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=512",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=128", // 128
+            "--neural_rendering_resolution_final=128", // 128
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            "--seg_gamma=1.0",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+            "--reg_type=l1", // 'l1', 'l1-alt', 'monotonic-detach', 'monotonic-fixed', 'total-variation'
+
+
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+            ],
+        },
+        {
+            "name": "Python: human_NOVA_ds_4gpu",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "cwd": "/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            // "module": "_train.eg3dc.trainers.train_NOVA_deepspeed",
+            "justMyCode": false,
+            "program": "/usr/local/dros/conda/envs/env_panohead/bin/deepspeed",
+            "env": {"PROJECT_DN":"/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1,2,3",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+            "--include",
+            "localhost:0,1,2,3",
+            "./_train/eg3dc/trainers/train_NOVA_deepspeed.py",
+            "--name=human_mv_panic3d_mask_encoder_attention_big",
+            "--training_loop_version=training_loop_ds",
+            "--generator_module=training.triplane.TriPlaneGenerator_v1",
+            "--generator_backbone=training.generator.Generator_v0",
+            "--loss_module=training.loss.StyleGAN2LossMultiMaskOrthoCond",
+            "--encoder_module=training.encoder.Encoder_v1",
+            "--encoder_config=/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-/_train/swin_transformer/configs/swinv2.yaml",
+            "--discriminator_module=training.dual_discriminator.MaskDualDiscriminator",
+            "--cond_mode=ortho_front.cond_img_norm_4.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--multi_view_cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4,ortho_back.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=human_rutileEB",
+            // "--metrics=fid100", // fid50k_full
+            "--gpus=2",
+            "--batch=8",
+            "--kimg=25000",
+            "--snap=10",
+            
+            // "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+            "--resume=None",
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=512",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=128", // 128
+            "--neural_rendering_resolution_final=128", // 128
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            "--seg_gamma=1.0",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+            "--reg_type=l1", // 'l1', 'l1-alt', 'monotonic-detach', 'monotonic-fixed', 'total-variation'
+
+
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+            ],
+        },
+        {
+            "name": "Python: human_mv-panic3d-NOVA_4A100",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_train.eg3dc.trainers.train_multi_view_panic3d_mask_encoder",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1,2,3",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+            "--name=human_mv_panic3d_nova",
+            "--training_loop_version=training_loop_v1",
+            "--loss_module=training.loss.StyleGAN2LossMultiOrthoCond",
+            "--generator_module=training.triplane.TriPlaneGenerator_v0",
+            "--generator_backbone=training.generator.Generator_v0",
+            "--encoder_module=None",
+            // "--encoder_config=/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-/_train/swin_transformer/configs/swinv2.yaml",
+            "--discriminator_module=training.dual_discriminator.DualDiscriminator",
+            "--cond_mode=ortho_front.cond_img_norm_4.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--multi_view_cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4,ortho_back.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=human_rutileEB",
+            // "--metrics=fid100", // fid50k_full
+            "--gpus=4",
+            "--batch=16",
+            "--kimg=25000",
+            "--snap=10",
+            
+            "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+            "--resume=None",
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=256",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=96", // 128
+            "--neural_rendering_resolution_final=96", // 128
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            "--seg_gamma=1.0",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+            "--reg_type=l1", // 'l1', 'l1-alt', 'monotonic-detach', 'monotonic-fixed', 'total-variation'
+
+            // "--lambda_gcond_rand_lpips=40.0",
+            // "--lambda_gcond_rand_l1=8.0",
+            // "--lambda_gcond_rand_alpha_l2=2.0",
+            // "--lambda_gcond_rand_depth_l2=2000.0",
+
+
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+            ],
+        },
+        {
+            "name": "Python: human_mv-panic3d",
+            "type": "python",
+            "request": "launch",
+            "cwd": "/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "module": "_train.eg3dc.trainers.train_multi_view_panic3d",
+            "console": "integratedTerminal",
+            "env": {"PROJECT_DN":"/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,1",
+                "MACHINE_NAME":"GpuA100*2"},
+            "args": [
+            "--name=human_mv_ecrutileE_eclustrousC_n120",
+            "--training_loop_version=training_loop_v1",
+            "--loss_module=training.loss.StyleGAN2LossMultiOrthoCond",
+            "--cond_mode=ortho_front.cond_img_norm_4.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--multi_view_cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4,ortho_back.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4",
+            "--data_subset=human_rutileEB",
+            // "--metrics=fid100", // fid50k_full
+            "--gpus=2",
+            "--batch=8",
+            "--kimg=25000",
+            "--snap=10",
+            
+            "--resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl",
+            "--resume=None",
+            "--triplane_depth=3",
+            "--triplane_width=16",
+            "--sr_channels_hidden=16",
+            "--backbone_resolution=256",
+            "--cbase_g=32768","--cmax_g=512",
+            "--cbase_d=32768","--cmax_d=512",
+            
+            "--neural_rendering_resolution_initial=96", // 128
+            "--neural_rendering_resolution_final=96", // 128
+            "--neural_rendering_resolution_fade_kimg=1000",
+
+            "--gamma=5.0",
+            // "--seg_gamma=100",
+            "--density_reg=0.5",
+            "--dlr=0.0010",
+            "--glr=0.0025",
+            "--blur_fade_kimg=0",
+            "--reg_type=l1", // 'l1', 'l1-alt', 'monotonic-detach', 'monotonic-fixed', 'total-variation'
+
+            // "--lambda_gcond_rand_lpips=40.0",
+            // "--lambda_gcond_rand_l1=8.0",
+            // "--lambda_gcond_rand_alpha_l2=2.0",
+            // "--lambda_gcond_rand_depth_l2=2000.0",
+
+
+            "--lambda_gcond_lpips=20.0",
+            "--lambda_gcond_l1=4.0",
+            "--lambda_gcond_alpha_l2=1.0",
+            "--lambda_gcond_depth_l2=1000.0",
+   
+            "--lambda_gcond_sides_lpips=20.0",
+            "--lambda_gcond_sides_l1=4.0",
+            "--lambda_gcond_sides_alpha_l2=1.0",
+            "--lambda_gcond_sides_depth_l2=1000.0",
+       
+            "--lambda_gcond_back_lpips=20.0",
+            "--lambda_gcond_back_l1=4.0",
+            "--lambda_gcond_back_alpha_l2=1.0",
+            "--lambda_gcond_back_depth_l2=1000.0",
+            ],
+        }
+    ]
+}
