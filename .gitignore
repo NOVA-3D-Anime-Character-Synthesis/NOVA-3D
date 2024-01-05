@@ -1,4 +1,3 @@
-core.71040
 
 images/
 .DS_Store
@@ -64,3 +63,4 @@ _data
 **/runs/
 supplementary/
 demo.ipynb
+*.out
