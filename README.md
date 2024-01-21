@@ -48,6 +48,10 @@ nohup python -m _scripts.eval.human_generate --generator_module training.triplan
 
 ## Metrics
 Run this line to reproduce the best-result metrics from our paper.  There might be minor hardware variations and randomness in rendering; below are results from two different machines.  
+Metrics for Vroid 3D dataset: 
+```
+nohup python -m _scripts.eval.human_measure --inferquery human_mv_panic3d_mask_encoder_attention-00001-000920 >> measure_nova.out &
+```
 Metrics for NOVA-Human dataset: 
 ```
 nohup python -m _scripts.eval.human_measure --inferquery human_mv_panic3d_mask_encoder_attention-00001-000920 >> measure_nova.out &
