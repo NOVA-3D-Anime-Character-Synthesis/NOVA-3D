@@ -228,14 +228,15 @@
             "name": "Python: human_measure",
             "type": "python",
             "request": "launch",
-            "cwd": "/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+            "cwd": "/HOME/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
             "module": "_scripts.eval.human_measure",
             "console": "integratedTerminal",
-            "env": {"PROJECT_DN":"/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
-                "CUDA_VISIBLE_DEVICES": "0,1",
-                "MACHINE_NAME":"GpuA100*2"},
+            "env": {"PROJECT_DN":"/HOME/HOME/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-",
+                "CUDA_VISIBLE_DEVICES": "0,",
+                "MACHINE_NAME":"GpuA100"},
             "args": [
-                "--inferquery=human_multi_panic3d-00057-000880",
+                "--inferquery=multi_panic3d-00000-002040",
+                "--dataset=multi",
             ]
         },
         {
