@@ -23,6 +23,7 @@ ap = uutil.argparse.ArgumentParser()
 ap.add_argument('--generator_module')
 ap.add_argument('--dataset')
 ap.add_argument('--inferquery')
+ap.add_argument('--is_video',type=bool,default=False)
 # ap.add_argument('--batch_size', type=int, default=1)
 args = ap.parse_args()
 generator_module = args.generator_module
@@ -34,6 +35,32 @@ edn = f'./temp/eval/{inferquery}'
 # load dataset
 from _databacks import lustrous_renders_v1 as dklustr
 dk = dklustr.DatabackendMinna()
+if args.is_video:
+    generate_list = [
+        ('camO', 'front', 0, 0, -1),
+        ('camO', 'left', 0, 90, -1),
+        ('camO', 'right', 0, -90, -1),
+        ('camO', 'back', 0, 180, -1),
+        *[
+            ('camP', f'{v:04d}', *dklustr.cam60[v].to(device), 30)
+            for v in dklustr.camsubs['spin12']
+        ],
+        *[
+            ('camVideo', f'{v:04d}', *dklustr.cam360[v].to(device), 30)
+            for v in dklustr.camsubs['spin360']
+        ],
+    ]
+else:
+    generate_list = [
+        ('camO', 'front', 0, 0, -1),
+        ('camO', 'left', 0, 90, -1),
+        ('camO', 'right', 0, -90, -1),
+        ('camO', 'back', 0, 180, -1),
+        *[
+            ('camP', f'{v:04d}', *dklustr.cam60[v].to(device), 30)
+            for v in dklustr.camsubs['spin12']
+        ],
+    ]
 if dataset == "human":
     front_bns = [
         f'human_rutileE/ortho/{bn[-1]}/{bn}/front'
@@ -122,20 +149,7 @@ for front_bn,back_bns in tqdm(zip(front_bns, back_bns)):
     uutil.pdump(mc, mkfile(fn_march))
 
     # get images (various views)
-    for cm,cam_view,elev,azim,fov in [
-        ('camO', 'front', 0, 0, -1),
-        ('camO', 'left', 0, 90, -1),
-        ('camO', 'right', 0, -90, -1),
-        ('camO', 'back', 0, 180, -1),
-        *[
-            ('camP', f'{v:04d}', *dklustr.cam60[v].to(device), 30)
-            for v in dklustr.camsubs['spin12']
-        ],
-        *[
-            ('camVideo', f'{v:04d}', *dklustr.cam360[v].to(device), 30)
-            for v in dklustr.camsubs['spin360']
-        ],
-    ]:
+    for cm,cam_view,elev,azim,fov in generate_list:
         with torch.no_grad():
             xin = {
                 'elevations': elev *torch.ones(1).to(device),

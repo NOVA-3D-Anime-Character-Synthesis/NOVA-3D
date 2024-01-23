@@ -25,6 +25,8 @@ In the animation industry, 3D modelers typically rely on front and back non-over
 cd NOVA-3D
 conda env create -f environment.yaml
 conda activate env_nova3d
+export PROJECT_DN=$(pwd)
+export MACHINE_NAME=gpuA100
 ```
 
 ## Training
@@ -39,7 +41,7 @@ nohup sh ./_train/eg3dc/runs/human_multi_panic3d/human_multi_view_panic3d_mask_e
 ## Generating results
    Inferencing for Vroid 3D dataset
 ```
-nohup python -m _scripts.eval.human_generate --inferquery multi_panic3d-00000-002080 --dataset multi --generator_module training.triplane.TriPlaneGenerator_v1 >> generate_nova_head.out & 
+nohup python -m _scripts.eval.human_generate --inferquery multi_panic3d-00000-002040 --dataset multi --generator_module training.triplane.TriPlaneGenerator_v1 >> generate_nova_head.out & 
 ```
    Inferencing for NOVA-Human dataset
 ```
@@ -50,11 +52,11 @@ nohup python -m _scripts.eval.human_generate --generator_module training.triplan
 Run this line to reproduce the best-result metrics from our paper.  There might be minor hardware variations and randomness in rendering; below are results from two different machines.  
 Metrics for Vroid 3D dataset: 
 ```
-nohup python -m _scripts.eval.human_measure --inferquery human_mv_panic3d_mask_encoder_attention-00001-000920 >> measure_nova.out &
+nohup python -m _scripts.eval.human_measure --inferquery human_mv_panic3d_mask_encoder_attention-00001-000920 >> measure_nova_body.out &
 ```
 Metrics for NOVA-Human dataset: 
 ```
-nohup python -m _scripts.eval.human_measure --inferquery human_mv_panic3d_mask_encoder_attention-00001-000920 >> measure_nova.out &
+nohup python -m _scripts.eval.human_measure --inferquery multi_panic3d-00000-002040 --dataset multi >> measure_nova_head.out &
 ```
 ## Datasets format
 Download [NOVA-Human](https://www.alipan.com/s/FqiHyraNCZd) dataset

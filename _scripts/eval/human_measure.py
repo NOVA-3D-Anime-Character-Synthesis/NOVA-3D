@@ -14,14 +14,17 @@ from skimage.metrics import structural_similarity as ssim
 from keras.applications.inception_v3 import InceptionV3
 from keras.applications.inception_v3 import preprocess_input
 
-os.environ['CUDA_VISIBLE_DEVICES']='1'
+os.environ['CUDA_VISIBLE_DEVICES']='0'
 device = torch.device('cuda')
 
 ap = uutil.argparse.ArgumentParser()
 ap.add_argument('--inferquery')
+ap.add_argument('--dataset')
 args = ap.parse_args()
 inferquery = args.inferquery
 # inferquery = 'human_ecrutileE_eclustrousC_n120-00000-000040'
+dataset = args.dataset
+assert dataset=="human" or dataset=="ecrutileE" or dataset=="multi"
 edn = f'./temp/eval/{inferquery}'
 
 
@@ -38,20 +41,20 @@ bns = [
 #     f'human_rutileE/ortho/{bn[-1]}/{bn}/back'
 #     for bn in uutil.read_bns('./_data/lustrous/subsets/human_rutileEB_test.csv')
 # ]
-# aligndata = pload('./_data/lustrous/renders/daredemoE/fandom_align_alignment.pkl')
+aligndata = pload('./_data/lustrous/renders/daredemoE/fandom_align_alignment.pkl')
 
 
 # load metrics
-# import clip
-# clip_model,preprocess = clip.load("ViT-B/32", device=device)
-# def clipsim(a, b):
-#     with torch.no_grad():
-#         a = preprocess(I(a).pil()).unsqueeze(0).to(device)
-#         b = preprocess(I(b).pil()).unsqueeze(0).to(device)
-#         a = clip_model.encode_image(a)
-#         b = clip_model.encode_image(b)
-#         cs = (a*b).sum() / (a[0].norm() * b[0].norm())
-#     return cs
+import clip
+clip_model,preprocess = clip.load("ViT-B/32", device=device)
+def clipsim(a, b):
+    with torch.no_grad():
+        a = preprocess(I(a).pil()).unsqueeze(0).to(device)
+        b = preprocess(I(b).pil()).unsqueeze(0).to(device)
+        a = clip_model.encode_image(a)
+        b = clip_model.encode_image(b)
+        cs = (a*b).sum() / (a[0].norm() * b[0].norm())
+    return cs
 lpips = utorch.LPIPSLoss().to(device)
 psnr = torchmetrics.PeakSignalNoiseRatio().to(device)
 
@@ -87,7 +90,7 @@ def calculate_fid(model, a, b):
 mets = {
     'lpips': lpips,
     'psnr': psnr,
-    # 'clip': clip,
+    'clip': clip,
     'ssim': ssim_metric,
 
 }
@@ -142,7 +145,10 @@ def point_mesh_f1(p2s, s2p, thresh):
     })
 
 # eval over samples
-bw = 2.1 # 0.7
+if dataset == 'human':
+    bw = 2.1 # 0.7
+else:
+    bw = 0.7
 roi = bw
 size = 512
 n_sample = 10000
@@ -183,21 +189,21 @@ for bn in tqdm(bns):
         ans2d['right'][k].append(v(pred_rgb, gt_rgb).item())
 
     # # 360 metrics
-    # viewavg = defaultdict(list)
-    # for view in dklustr.camsubs['spin12']:
-    #     view = f'/{view:04d}'
-    #     gt_rgb = dk[bn.replace('/front',view)].image.resize(size).convert('RGBA').bg('w').convert('RGB').t()[None].to(device)
-    #     pred_rgb = I(f"{edn}/{bn.replace('/front',view)}.png").resize(size).convert('RGBA').bg('w').convert('RGB').t()[None].to(device)
-    #     for k,v in mets.items():
-    #         viewavg[k].append(v(pred_rgb, gt_rgb).item())
-    # for k in mets:
-    #     ans2d['360'][k].append(np.mean(viewavg[k]))
+    viewavg = defaultdict(list)
+    for view in dklustr.camsubs['spin12']:
+        view = f'/{view:04d}'
+        gt_rgb = dk[bn.replace('/ortho','/rgb60').replace('/front',view)].image.resize(size).convert('RGBA').bg('w').convert('RGB').t()[None].to(device)
+        pred_rgb = I(f"{edn}/{bn.replace('/ortho','/rgb60').replace('/front',view)}.png").resize(size).convert('RGBA').bg('w').convert('RGB').t()[None].to(device)
+        for k,v in mets.items():
+            viewavg[k].append(v(pred_rgb, gt_rgb).item())
+    for k in mets:
+        ans2d['360'][k].append(np.mean(viewavg[k]))
 
 
     ################ 3d metrics ################
 
     # # load pred mesh
-    # fn_march = f'{edn}/{bn}.pkl'
+    # fn_march = f'{edn}/{bn.replace("front","marching_cubes")}.pkl'
     # mc = pload(fn_march)
     # mc['verts'] = mc['verts'] * np.asarray([-1,1,1])[None]
 
@@ -216,7 +222,7 @@ for bn in tqdm(bns):
     #     clip=False,
     # )
 
-    # # get gt mesh
+    # # # get gt mesh
     # _,dt,franch,idx,_ = bn.split('/')
     # gltf = uvrm.LustrousGLTF(f'./_data/lustrous/raw/vroid/{franch}/{idx}.vrm').remove_innards()
     # head = uvrm.LustrousGLTFDecapitated(gltf)

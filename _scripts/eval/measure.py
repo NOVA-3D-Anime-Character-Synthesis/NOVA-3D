@@ -46,7 +46,7 @@ psnr = torchmetrics.PeakSignalNoiseRatio().to(device)
 mets = {
     'lpips': lpips,
     'psnr': psnr,
-    # 'clip': clipsim,
+    'clip': clipsim,
     # 'ssim': ssim_metric,
     # 'fid': calculate_fid,
 }
