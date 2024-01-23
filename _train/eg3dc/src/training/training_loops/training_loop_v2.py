@@ -185,12 +185,13 @@ def training_loop(
         for name, module in [('D', D), ]:
             misc.copy_params_and_buffers(resume_data_discrim[name], module, require_all=False)
 
+    # 减少0卡显存占用
     # Print network summary tables.
-    if rank == 0:
-        z = torch.empty([batch_gpu, G.z_dim], device=device)
-        c = torch.empty([batch_gpu, G.c_dim], device=device)
-        # img = misc.print_module_summary(G, [z, c])
-        # misc.print_module_summary(D, [img, c])
+    # if rank == 0:
+    #     z = torch.empty([batch_gpu, G.z_dim], device=device)
+    #     c = torch.empty([batch_gpu, G.c_dim], device=device)
+    #     # img = misc.print_module_summary(G, [z, c])
+    #     # misc.print_module_summary(D, [img, c])
 
     # Setup augmentation.
     if rank == 0:
@@ -276,23 +277,24 @@ def training_loop(
     #     print(phase['name'], phase['interval'],)# phase['module'])
     # exit(0)
 
+    # 减少0卡显存占用
     # Export sample images.
-    grid_size = None
-    grid_z = None
-    grid_c = None
-    grid_cond = None
-    if rank == 0:
-        print('Exporting sample images...')
-        grid_size, images, labels = setup_snapshot_image_grid(training_set=training_set)
-        save_image_grid(images, os.path.join(run_dir, 'reals.png'), drange=[0,255], grid_size=grid_size)
-        grid_z = torch.randn([labels.shape[0], G.z_dim], device=device).split(batch_gpu)
-        grid_c = torch.from_numpy(labels).to(device).split(batch_gpu)
-        grid_cond = utorch.default_collate([training_set[i]['condition'] for i in range(labels.shape[0])])
-        grid_cond = {k: v.to(device).split(batch_gpu) for k,v in grid_cond.items()}
-        grid_cond = [
-            {k: v[i] for k,v in grid_cond.items()}
-            for i in range(len(list(grid_cond.values())[0]))
-        ]
+    # grid_size = None
+    # grid_z = None
+    # grid_c = None
+    # grid_cond = None
+    # if rank == 0:
+    #     print('Exporting sample images...')
+    #     grid_size, images, labels = setup_snapshot_image_grid(training_set=training_set)
+    #     save_image_grid(images, os.path.join(run_dir, 'reals.png'), drange=[0,255], grid_size=grid_size)
+    #     grid_z = torch.randn([labels.shape[0], G.z_dim], device=device).split(batch_gpu)
+    #     grid_c = torch.from_numpy(labels).to(device).split(batch_gpu)
+    #     grid_cond = utorch.default_collate([training_set[i]['condition'] for i in range(labels.shape[0])])
+    #     grid_cond = {k: v.to(device).split(batch_gpu) for k,v in grid_cond.items()}
+    #     grid_cond = [
+    #         {k: v[i] for k,v in grid_cond.items()}
+    #         for i in range(len(list(grid_cond.values())[0]))
+    #     ]
         # print(len(grid_c))
         # print(len(grid_z))
         # print(len(grid_cond))
@@ -437,18 +439,18 @@ def training_loop(
             if rank == 0:
                 print()
                 print('Aborting...')
-
+        # 减少0卡显存占用
         # Save image snapshot.
-        if (rank == 0) and (image_snapshot_ticks is not None) and (done or cur_tick % image_snapshot_ticks == 0): # 50
-            out = [G_ema(z=z, c=c, cond=cond, noise_mode='const') for z, c, cond in zip(grid_z, grid_c, grid_cond)]
-            images = torch.cat([o['image'].cpu() for o in out]).numpy()
-            images_raw = torch.cat([o['image_raw'].cpu() for o in out]).numpy()
-            images_depth = -torch.cat([o['image_depth'].cpu() for o in out]).numpy()
-            images_real = torch.cat([cond['image'].cpu() for cond in grid_cond]).numpy()
-            save_image_grid(images, os.path.join(run_dir, f'fakes{cur_nimg//1000:06d}.png'), drange=[-1,1], grid_size=grid_size)
-            save_image_grid(images_raw, os.path.join(run_dir, f'fakes{cur_nimg//1000:06d}_raw.png'), drange=[-1,1], grid_size=grid_size)
-            save_image_grid(images_depth, os.path.join(run_dir, f'fakes{cur_nimg//1000:06d}_depth.png'), drange=[images_depth.min(), images_depth.max()], grid_size=grid_size)
-            save_image_grid(images_real, os.path.join(run_dir, f'reals{cur_nimg//1000:06d}_image.png'), drange=[images_real.min(), images_real.max()], grid_size=grid_size)
+        # if (rank == 0) and (image_snapshot_ticks is not None) and (done or cur_tick % image_snapshot_ticks == 0): # 50
+        #     out = [G_ema(z=z, c=c, cond=cond, noise_mode='const') for z, c, cond in zip(grid_z, grid_c, grid_cond)]
+        #     images = torch.cat([o['image'].cpu() for o in out]).numpy()
+        #     images_raw = torch.cat([o['image_raw'].cpu() for o in out]).numpy()
+        #     images_depth = -torch.cat([o['image_depth'].cpu() for o in out]).numpy()
+        #     images_real = torch.cat([cond['image'].cpu() for cond in grid_cond]).numpy()
+        #     save_image_grid(images, os.path.join(run_dir, f'fakes{cur_nimg//1000:06d}.png'), drange=[-1,1], grid_size=grid_size)
+        #     save_image_grid(images_raw, os.path.join(run_dir, f'fakes{cur_nimg//1000:06d}_raw.png'), drange=[-1,1], grid_size=grid_size)
+        #     save_image_grid(images_depth, os.path.join(run_dir, f'fakes{cur_nimg//1000:06d}_depth.png'), drange=[images_depth.min(), images_depth.max()], grid_size=grid_size)
+        #     save_image_grid(images_real, os.path.join(run_dir, f'reals{cur_nimg//1000:06d}_image.png'), drange=[images_real.min(), images_real.max()], grid_size=grid_size)
             
             #--------------------
             # # Log forward-conditioned images
