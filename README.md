@@ -1,6 +1,6 @@
 # NOVA-3D: Non-overlapped Views for 3D Anime Character Reconstruction
 Official PyTorch implementation of **NOVA-3D**
-![preface](fig/preface.png)
+![preface](figs/preface.png)
 <center style="font-size:14px;color:#C0C0C0;text-decoration:underline">Left: NOVA-3D achieves full-body anime character reconstruction from non-overlapped views. Right: The excellent results of NOVA-3D on head reconstruction of anime characters, with exquisite texture details, clear contours as well as 3D consistency.</center> 
 
 [Project Page](https://nova-3d-anime-character-synthesis.github.io/NOVA-3D/) \| [Dataset](https://www.alipan.com/s/FqiHyraNCZd)
@@ -11,11 +11,11 @@ In the animation industry, 3D modelers typically rely on front and back non-over
 
 ## Result
 <div align="center">
-   <img src="fig/head1.gif"  width="300"><img src="fig/head2.gif" width="300">
+   <img src="figs/head1.gif"  width="300"><img src="figs/head2.gif" width="300">
 </div>
 <p align="center">These two are 360-degree displays of the head of 3D anime character model.</p>
 <div align="center">
-   <img src="fig/body2.gif"  width="300"><img src="fig/body3.gif" width="300">
+   <img src="figs/body2.gif"  width="300"><img src="figs/body3.gif" width="300">
 </div>
 <p align="center">These two are 360-degree displays of the full-body of 3D anime character model.</p>
 
@@ -77,27 +77,27 @@ After these, the folder structure should look like this(front images and back im
 
 We curated a large dataset comprising 10.2k 3D anime character models from the open-source platform VroidHub. We named it the **NOVA-Human** dataset.
 
-<div align=center><p><img src="fig/ACG.png" align="middle" /></p>
+<div align=center><p><img src="figs/ACG.png" align="middle" /></p>
 <center style="font-size:14px;color:#C0C0C0;text-decoration:underline">Here are some anime characters from various works in the ACG (Anime, Comic and Game) field showcased in the NOVA-Human dataset. It includes well-known characters in the ACG community such as Hatsune Miku, Uzumaki Naruto, Kiana, Ram, Megumin, and Kamado Nezuko.</center> </div>
 
-<div align=center><p><img src="fig/dataset_1.png" align="middle" /></p>
+<div align=center><p><img src="figs/dataset_1.png" align="middle" /></p>
 <center style="font-size:14px;color:#C0C0C0;text-decoration:underline">Here we present the training data sampled from a 3D anime character model in NOVA-Human. On the left are 16 randomly sampled views, while on the right are four fixed orthogonal sampled views.</center> </div>
 
-<div align=center><p><img src="fig/Future.png" align="middle" /></p>
+<div align=center><p><img src="figs/Future.png" align="middle" /></p>
 <center style="font-size:14px;color:#C0C0C0;text-decoration:underline">Here are the anime characters with a futuristic or near-futuristic Cyberpunk style showcased in the NOVA-Human dataset.</center> </div>
 
-<div align=center><p><img src="fig/gete.png" align="middle" /></p>
+<div align=center><p><img src="figs/gete.png" align="middle" /></p>
 <center style="font-size:14px;color:#C0C0C0;text-decoration:underline">Here are the anime characters with a Gothic style showcased in the NOVA-Human dataset.</center> </div>
 
-<div align=center><p><img src="fig/dark.png" align="middle" /></p>
+<div align=center><p><img src="figs/dark.png" align="middle" /></p>
 <center style="font-size:14px;color:#C0C0C0;text-decoration:underline">Here are the anime characters with a Dark Horror style showcased in the NOVA-Human dataset.</center> </div>
 
-<div align=center><p><img src="fig/zhongzu.png" align="middle" /></p>
+<div align=center><p><img src="figs/zhongzu.png" align="middle" /></p>
 <center style="font-size:14px;color:#C0C0C0;text-decoration:underline">Here are the anime characters with different body types and races showcased in the NOVA-Human dataset, including Beast ear Niang, Elf, Demons, Robots, and more.</center> </div>
 
-<div align=center><p><img src="fig/xiaozhong.png" align="middle" /></p>
+<div align=center><p><img src="figs/xiaozhong.png" align="middle" /></p>
 <center style="font-size:14px;color:#C0C0C0;text-decoration:underline">Here are anime characters with niche styles showcased in the NOVA-Human dataset, including various unique and unconventional characters.</center> </div>
 
-<div align=center><p><img src="fig/moredata.png" align="middle" /></p>
+<div align=center><p><img src="figs/moredata.png" align="middle" /></p>
 <center style="font-size:14px;color:#C0C0C0;text-decoration:underline">Here we showcase additional sampled views from the NOVA-Human dataset. Our dataset encompasses a diverse range of 3D anime characters.</center> </div>
 

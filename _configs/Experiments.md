@@ -128,6 +128,7 @@ nohup python -m _scripts.train.generate_human_rgb_mask >> generate_human_rgb_mas
     nohup sh _train/eg3dc/runs/human_multi_panic3d/human_multi_view_panic3d_mask_encoder_attention_big_train_4gpu.sh  >> human_mv_panic3d_mask_pat_attention_big_4gpu_3.out &
     2024.1.23
     nohup sh ./_configs/nova_human/human_nova_1gpu.sh >> human_nova_1gpu.out &
+    nohup sh ./_configs/nova_human/human_nova.sh >> human_nova.out &
 # 消融实验
 ## mv-panic3d+mask+pat+Noattention 4gpu在跑
     2023.11.16
@@ -136,7 +137,7 @@ nohup python -m _scripts.train.generate_human_rgb_mask >> generate_human_rgb_mas
     nohup sh ./_train/eg3dc/runs/human_multi_panic3d/human_mv_panic3d_mask_Noencoder_attention_train_4gpu.sh >> human_mv_panic3d_mask_Nopat_atten_4A100_3.out &
 ## mv-panic3d+Nomask+Pat+attention 4gpu完成fid133
     nohup sh ./_train/eg3dc/runs/human_multi_panic3d/human_mv_panic3d_Nomask_encoder_attention_train_4gpu.sh >> human_mv_panic3d_Nomask_pat_atten_4A100_4.out &
-# NOVA
+# NOVA B
     nohup sh ./_train/eg3dc/runs/humanB_multi_panic3d/humanB_train_4gpu.sh >> humanB_NOVA_4gpu_3.out &
 # NOVA-deepspeed
     ./_train/eg3dc/runs/human_multi_panic3d/human_nova_big_deepspeed.sh
@@ -191,8 +192,10 @@ nohup python -m _scripts.eval.human_measure --inferquery multi_panic3d-00000-002
 zip -r ./panic3d-anime-reconstruction_total.zip ./ &
 nohup unzip -d ./multi_view_panic3d/ panic3d_data_total_v2.zip &
 [1] 27209
-
-
+2024.1.25
+mkdir -p ./_data/lustrous/renders/
+nohup cp -r ./_data/lustrous/renders/human_rutileE/ /root/workspace/_data/lustrous/renders/ > gpu2_1.out &
+cp -r ./_data/lustrous/subsets/ /root/workspace/_data/lustrous/ 
 ## 挑图
 首页图：
 

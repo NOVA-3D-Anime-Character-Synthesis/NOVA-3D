@@ -54,7 +54,7 @@ def mask_view_orthofront(front_xyz, front_alpha, view_xyz, view_alpha, boxwarp):
     # I(ans).convert('RGBA').bg().right(x_rgb_f.image)
     return ans
 
-class StyleGAN2LossMultiMaskOrthoCond(Loss):
+class NOVALoss(Loss):
     def __init__(
             self, device, G, D, lpips_model,
             augment_pipe=None, r1_gamma=10, r1_gamma_seg=1000 ,style_mixing_prob=0,
@@ -316,7 +316,7 @@ class StyleGAN2LossMultiMaskOrthoCond(Loss):
                         stride=1,
                         padding=k,
                     ) / (2*k+1)**2
-                    msk = (msk-0.5).abs()*2 > 0.5 
+                    msk = (msk-0.5).abs()*2 > 0.5 # 0/1
                     loss_Gcond_alpha_l2 = (out['image_weights']-gt_alpha).pow(2).mul(msk.float()).mean()
                     training_stats.report('Loss/G/cond/alpha_l2', loss_Gcond_alpha_l2)
 
@@ -612,7 +612,7 @@ class StyleGAN2LossMultiMaskOrthoCond(Loss):
                     cutoff = torch.where(torch.rand([], device=ws.device) < self.style_mixing_prob, cutoff, torch.full_like(cutoff, ws.shape[1]))
                     ws[:, cutoff:] = self.G.mapping(torch.randn_like(z), c, real_cond, update_emas=False)[:, cutoff:]
             initial_coordinates = torch.rand((ws.shape[0], 1000, 3), device=ws.device) * 2 - 1 # [-1,1]
-            perturbed_coordinates = initial_coordinates + torch.randn_like(initial_coordinates) * self.G.rendering_kwargs['density_reg_p_dist'] #density_reg_p_dist:0.04
+            perturbed_coordinates = initial_coordinates + torch.randn_like(initial_coordinates) * self.G.rendering_kwargs['density_reg_p_dist'] #density_reg_p_dist:0.04, 均值为0，标准差为0.04 
             all_coordinates = torch.cat([initial_coordinates, perturbed_coordinates], dim=1)
             sigma = self.G.sample_mixed(all_coordinates, torch.randn_like(all_coordinates), ws, real_cond, update_emas=False)['sigma']
             sigma_initial = sigma[:, :sigma.shape[1]//2]
@@ -681,9 +681,9 @@ class StyleGAN2LossMultiMaskOrthoCond(Loss):
             all_coordinates = torch.cat([initial_coordinates, perturbed_coordinates], dim=1)
             sigma = self.G.sample_mixed(all_coordinates, torch.randn_like(all_coordinates), ws, real_cond, update_emas=False)['sigma']
             sigma_initial = sigma[:, :sigma.shape[1]//2]
-            sigma_perturbed = sigma[:, sigma.shape[1]//2:]
+            sigma_perturbed = sigma[:, sigma.shape[1]//2:] 
 
-            monotonic_loss = torch.relu(sigma_initial - sigma_perturbed).mean() * 10
+            monotonic_loss = torch.relu(sigma_initial - sigma_perturbed).mean() * 10 # 体密度平滑，增强几何的平滑性
             monotonic_loss.mul(gain).backward()
 
 
@@ -746,8 +746,8 @@ class StyleGAN2LossMultiMaskOrthoCond(Loss):
                     if self.dual_discrimination: # mask dual_discrimination
                         with torch.autograd.profiler.record_function('r1_grads'), conv2d_gradfix.no_weight_gradients():
                             r1_grads = torch.autograd.grad(outputs=[real_logits.sum()], inputs=[real_img_tmp['image'], real_img_tmp['image_raw'],real_img_tmp['image_mask']], create_graph=True, only_inputs=True)
-                            r1_grads_image = r1_grads[0] 
-                            r1_grads_image_raw = r1_grads[1] - 1
+                            r1_grads_image = r1_grads[0]
+                            r1_grads_image_raw = r1_grads[1]
                             r1_grads_image_mask = r1_grads[2]
                         r1_penalty = r1_grads_image.square().sum([1,2,3]) + r1_grads_image_raw.square().sum([1,2,3])
                         r1_penalty_seg = r1_grads_image_mask.square().sum([1,2,3])

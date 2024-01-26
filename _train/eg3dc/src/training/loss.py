@@ -27,8 +27,8 @@ from training.losses.loss_orthocondB import StyleGAN2LossOrthoCondB # back作为
 from training.losses.loss_multiorthocond import StyleGAN2LossMultiOrthoCond # front，back作为输入
 from training.losses.loss_multimaskorthocond import StyleGAN2LossMultiMaskOrthoCond # front,back作为输入
 from training.losses.loss_multimaskorthocond_human import StyleGAN2LossMultiMaskOrthoCond as StyleGAN2LossMultiMaskOrthoCond_human # front,back作为输入
-from training.losses.loss_multimaskorthocond_human_r1 import StyleGAN2LossMultiMaskOrthoCond as StyleGAN2LossMultiMaskOrthoCond_human_r1 # front,back作为输入
 from training.losses.loss_multimaskorthocond_humanB import StyleGAN2LossMultiMaskOrthoCond as StyleGAN2LossMultiMaskOrthoCond_humanB # front,back作为输入
+from training.losses.loss_nova_v0 import NOVALoss as NOVALoss_v0
 
 #----------------------------------------------------------------------------
 

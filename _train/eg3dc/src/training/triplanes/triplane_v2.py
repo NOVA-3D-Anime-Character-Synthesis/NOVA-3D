@@ -7,19 +7,13 @@
 # disclosure or distribution of this material and related documentation
 # without an express license agreement from NVIDIA CORPORATION or
 # its affiliates is strictly prohibited.
-
-from training.triplanes.triplane_v0 import TriPlaneGenerator as TriPlaneGenerator_v0 # 
-from training.triplanes.triplane_v1 import TriPlaneGenerator as TriPlaneGenerator_v1
-from training.triplanes.triplane_v2 import TriPlaneGenerator as TriPlaneGenerator_v2 
-from training.triplanes.triplane_humanB import TriPlaneGenerator as TriPlaneGenerator_humanB
-# from .decoders.decoder_v0 import MultiViewOSGDecoder as MultiViewOSGDecoder_v0
-
-
 import torch
 from torch_utils import persistence
 from training.networks_stylegan2 import Generator as StyleGAN2Backbone
 from training.volumetric_rendering.renderer import ImportanceRenderer, MultiViewImportanceRenderer
 from training.volumetric_rendering.ray_sampler import RaySampler
+from training.decoders.decoder_v2 import MultiViewOSGDecoder
+
 import dnnlib
 from camera_utils import LookAtPoseSampler
 from torch import nn
@@ -32,7 +26,7 @@ import _util.twodee_v1 as u2d
 
 import _databacks.lustrous_renders_v1 as dklustr
 
-
+# attention Decoder
 @persistence.persistent_class
 class TriPlaneGenerator(torch.nn.Module):
     def __init__(self,
@@ -44,12 +38,14 @@ class TriPlaneGenerator(torch.nn.Module):
         sr_num_fp16_res     = 0,
         mapping_kwargs      = {},   # Arguments for MappingNetwork.
         rendering_kwargs    = {},
+        encoder_kwargs      = {},
         sr_kwargs = {},
         cond_mode = None,
         multi_view_cond_mode = None,
         triplane_width=32,
         sr_channels_hidden=256,
         backbone_resolution=256,
+        backbone=None,
         **synthesis_kwargs,         # Arguments for SynthesisNetwork.
     ):
         super().__init__()
@@ -62,16 +58,27 @@ class TriPlaneGenerator(torch.nn.Module):
         self.ray_sampler = RaySampler()
         self.triplane_width = triplane_width
         self.backbone_resolution = backbone_resolution
-        self.backbone = StyleGAN2Backbone(
-            z_dim, c_dim, w_dim, img_resolution=backbone_resolution,
-            img_channels=self.triplane_width*3*(
-                1 if 'triplane_depth' not in rendering_kwargs else rendering_kwargs['triplane_depth']
-            ),            
-            cond_mode=cond_mode,
-            multi_view_cond_mode=multi_view_cond_mode, 
-            mapping_kwargs=mapping_kwargs, **synthesis_kwargs,
-        )
-
+        if backbone==None:
+             self.backbone = StyleGAN2Backbone(
+                z_dim, c_dim, w_dim, img_resolution=backbone_resolution,
+                img_channels=self.triplane_width*3*(
+                    1 if 'triplane_depth' not in rendering_kwargs else rendering_kwargs['triplane_depth']
+                ),            
+                cond_mode=cond_mode,
+                multi_view_cond_mode=multi_view_cond_mode, 
+                mapping_kwargs=mapping_kwargs, **synthesis_kwargs,
+            )
+        else:
+            self.backbone = dnnlib.util.construct_class_by_name(
+                class_name=backbone,
+                z_dim=z_dim, c_dim=c_dim, w_dim=w_dim, img_resolution=backbone_resolution,
+                img_channels=self.triplane_width*3*(
+                    1 if 'triplane_depth' not in rendering_kwargs else rendering_kwargs['triplane_depth']
+                ),            
+                cond_mode=cond_mode,
+                multi_view_cond_mode=multi_view_cond_mode, 
+                mapping_kwargs=mapping_kwargs, encoder_kwargs=encoder_kwargs,**synthesis_kwargs,                                                
+            )
         self.superresolution = dnnlib.util.construct_class_by_name(
             class_name=rendering_kwargs['superresolution_module'],
             channels=32,
@@ -88,7 +95,7 @@ class TriPlaneGenerator(torch.nn.Module):
         if self.multi_view_cond_mode !=None:
             self.multi_view_renderer = MultiViewImportanceRenderer(use_triplane=rendering_kwargs.get('use_triplane', False), triplane_width=triplane_width)
             self.decoder = MultiViewOSGDecoder(
-            self.triplane_width*2,
+            self.triplane_width,
             {
                 'decoder_lr_mul':
                     rendering_kwargs.get('decoder_lr_mul', 1),
@@ -98,13 +105,13 @@ class TriPlaneGenerator(torch.nn.Module):
         else:
             self.multi_view_renderer = None
             self.decoder = OSGDecoder(
-            self.triplane_width,
-            {
-                'decoder_lr_mul':
-                    rendering_kwargs.get('decoder_lr_mul', 1),
-                'decoder_output_dim': 32,
-            },
-        )
+                self.triplane_width,
+                {
+                    'decoder_lr_mul':
+                        rendering_kwargs.get('decoder_lr_mul', 1),
+                    'decoder_output_dim': 32,
+                },
+            )
         self._last_planes = None
         self._last_front_planes = None
         self._last_back_planes = None
@@ -117,11 +124,11 @@ class TriPlaneGenerator(torch.nn.Module):
             update_emas=False,
         ):
         # print(c.dtype, c.device)
-        if self.rendering_kwargs['c_gen_conditioning_zero']:
+        if self.rendering_kwargs['c_gen_conditioning_zero']: # 不使用相机参数
             c = torch.zeros_like(c)
         # shu's fine-tuning hacks
         if 'c_gen_conditioning_force_ffhq' in self.rendering_kwargs and \
-                self.rendering_kwargs['c_gen_conditioning_force_ffhq']:
+                self.rendering_kwargs['c_gen_conditioning_force_ffhq']: # 不使用ffhq的相机参数
             intr = torch.tensor([
                 [4.2647, 0.    , 0.5   ],
                 [0.    , 4.2647, 0.5   ],
@@ -163,9 +170,33 @@ class TriPlaneGenerator(torch.nn.Module):
         # print(c.shape, c.dtype)
         # print(zs_new.shape)
         # print(c_new.shape)
-        ans = self.mapping(zs_new, c_new, cond_new, truncation_psi=truncation_psi, truncation_cutoff=truncation_cutoff, update_emas=update_emas)
-        ans = ans.view(bs,n,n,dim).permute(1,2,0,3)[range(n),range(n)].permute(1,0,2)
+        ans = self.mapping(zs_new, c_new, cond_new, truncation_psi=truncation_psi, truncation_cutoff=truncation_cutoff, update_emas=update_emas) #  [56,14,512]
+        ans = ans.view(bs,n,n,dim).permute(1,2,0,3)[range(n),range(n)].permute(1,0,2) # 在[14,14,B,412]的[14*14]矩阵中只选择对角线元素
         return ans
+
+    # camera pose self_adaptation mapping, return c after added t_vector
+    def apply_delta_c(self, z, c, truncation_psi=1, truncation_cutoff=None, update_emas=False):
+        '''
+        Input:
+        z: latent code z
+        c: latent code c
+
+        Output:
+        c_new: latent code c after adding the delta
+        delta_c: delta_c from z and c_cam
+        '''
+        if self.rendering_kwargs['c_gen_conditioning_zero']:
+            c = torch.zeros_like(c)
+        delta_c = self.t_mapping(z, c * self.rendering_kwargs.get('c_scale', 0), truncation_psi=truncation_psi, truncation_cutoff=truncation_cutoff, update_emas=update_emas)
+        delta_c = torch.squeeze(delta_c, 1)
+        # delta_c = delta_c * 0.1 # scale for better initialization
+        # index 3, 7, 11 are the translation index in extrinsic
+        c_new = c.clone()
+        c_new[:,3] += delta_c[:,0]
+        c_new[:,7] += delta_c[:,1]
+        c_new[:,11] += delta_c[:,2]
+
+        return c_new, delta_c
 
     def synthesis(
             self, ws, c, cond,
@@ -303,7 +334,7 @@ class TriPlaneGenerator(torch.nn.Module):
                 front_planes.shape[-1],
             )  # changed for yichun's multiplane (shu added)
 
-            back_planes = back_planes.view( # B,3,48,256,256
+            back_planes = back_planes.view(
                 len(back_planes),
                 3,
                 self.triplane_width*self.rendering_kwargs.get('triplane_depth',1),
@@ -341,6 +372,7 @@ class TriPlaneGenerator(torch.nn.Module):
             rgb_image = feature_image[:, :3] # [4,3,96,96]
             sr_image = self.superresolution(rgb_image, feature_image, ws, noise_mode=self.rendering_kwargs['superresolution_noise_mode'], **{k:synthesis_kwargs[k] for k in synthesis_kwargs.keys() if k != 'noise_mode'}) # [4,3,512,512]
 
+            mask_image = weights_image # *(1+2*0.001) - 0.001 # 有问题
             # ans = {'image': sr_image, 'image_raw': rgb_image, 'image_depth': depth_image}
             ans = {
                 'image': sr_image,
@@ -351,6 +383,7 @@ class TriPlaneGenerator(torch.nn.Module):
                 'triplane_back': back_planes,
                 'image_weights': weights_image,
                 'image_xyz': xyz_image,
+                'image_mask':mask_image, # 1,512,512, [0~1], softargmax
             }
             if self.rendering_kwargs.get('tanh_rgb_output', False): # 0
                 ans['image'] = torch.tanh(ans['image'])
@@ -504,7 +537,7 @@ class TriPlaneGenerator(torch.nn.Module):
                     np.random.RandomState(s).randn(self.z_dim)
                     for s in x['seeds']
                 ]), device=device, dtype=dtype)
-            x['zs'] = x['z'][:,None,:].expand(-1,self.backbone.num_ws,-1) 
+            x['zs'] = x['z'][:,None,:].expand(-1,self.backbone.num_ws,-1)
 
         # output cameras
         if 'camera_params' not in x:
@@ -535,7 +568,7 @@ class TriPlaneGenerator(torch.nn.Module):
                 for elev,azim,dist,fov in zip(x['elevations'], x['azimuths'], x['distances'], x['fovs'])
             ]).to(dtype).to(device)
 
-        # force rays by default (calculate them here)
+        # force rays by default (calculate them here)  分为多种情况，根据阶段来划分
         force_rays = (x['force_rays'] if 'force_rays' in x else None) or force_rays # None
         neural_rendering_resolution = x['neural_rendering_resolution'] \
             if 'neural_rendering_resolution' in x else self.neural_rendering_resolution  # 96
@@ -550,7 +583,7 @@ class TriPlaneGenerator(torch.nn.Module):
 
             # detect + replace orthographic ones (negative fov)
             for i,intr in enumerate(intrinsics):
-                if intr[0,0]<0:
+                if intr[0,0]<0: # 忽略
                     r = dklustr.get_rays_ortho(
                         x['elevations'][i],
                         x['azimuths'][i],
@@ -601,7 +634,8 @@ class TriPlaneGenerator(torch.nn.Module):
         # # x['conditioning_params'] = x['conditioning_params'].to(dtype)
 
         # ws mapping
-        if 'ws' not in x:
+        if 'ws' not in x: # 针对生成正交视图的时候，需要在mapping中加入正交视图的特征
+            
             # print(x['zs'].dtype, x['zs'].device)
             # print(x['conditioning_params'].dtype, x['conditioning_params'].device)
             ws = self.mapping_zplus(
@@ -639,9 +673,11 @@ class TriPlaneGenerator(torch.nn.Module):
             'image_raw': synth['image_raw'],
             'image_depth': synth['image_depth'],
             'image_weights': synth['image_weights'],
+            'image_mask':synth['image_mask'],
             'triplane': synth['triplane'],
             'image_xyz': synth['image_xyz'],
             'normalize_images': normalize_images,
+            
         })
         x.update(ret)
 
@@ -660,7 +696,6 @@ class TriPlaneGenerator(torch.nn.Module):
 
     def set_force_sigmoid(self, state):
         return self.decoder.set_force_sigmoid(state)
-
 
 
 from training.networks_stylegan2 import FullyConnectedLayer
@@ -701,46 +736,207 @@ class OSGDecoder(torch.nn.Module):
     def set_force_sigmoid(self, state):
         self.force_sigmoid = state
         return self.force_sigmoid
-
-
-class MultiViewOSGDecoder(torch.nn.Module):
-    def __init__(self, n_features, options):
-        super().__init__()
-        self.hidden_dim = 64
-        self.force_sigmoid = False
-
-        self.net = torch.nn.Sequential(
-            FullyConnectedLayer(n_features, self.hidden_dim, lr_multiplier=options['decoder_lr_mul']),
-            torch.nn.Softplus(),
-            FullyConnectedLayer(self.hidden_dim, 1 + options['decoder_output_dim'], lr_multiplier=options['decoder_lr_mul'])
-        )
+    
+class DirectionAttention(torch.nn.Module):
+    def __init__(self, d_model, num_heads):
+        super(DirectionAttention, self).__init__()
         
-    def forward(self, front_sampled_features,back_sampled_features, ray_directions, force_sigmoid=None): # B, point_num, 3
-        """
-            sampled_features : B, point_num, 3
-            ray
-        """
-        # Aggregate features
-        front_sampled_features = front_sampled_features.mean(1) # 
-        back_sampled_features = back_sampled_features.mean(1)
-        x = torch.cat([front_sampled_features,back_sampled_features],-1)
-        force_sigmoid = force_sigmoid or self.force_sigmoid
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.head_dim = d_model // num_heads
+        
+        self.query = nn.Linear(3, d_model)
+        self.key = nn.Linear(d_model, d_model)
+        self.value = nn.Linear(d_model, d_model)
+        
+        self.fc = nn.Linear(d_model, d_model)
 
-        N, M, C = x.shape
-        x = x.view(N*M, C)
+    def forward(self, x, direction):
+        batch_size = x.shape[0]
+        
+        # Linear transformation of input to query, key, and value
+        query = self.query(direction)
+        key = self.key(x)
+        value = self.value(x)
+        
+        # Reshape query, key, and value for multi-head attention
+        query = query.view(batch_size, -1, self.num_heads, self.head_dim).transpose(1, 2)
+        key = key.view(batch_size, -1, self.num_heads, self.head_dim).transpose(1, 2)
+        value = value.view(batch_size, -1, self.num_heads, self.head_dim).transpose(1, 2)
+        
+        # Compute scores using dot product attention
+        scores = torch.matmul(query, key.transpose(-2, -1)) / torch.sqrt(torch.tensor(self.head_dim).float())
+        
+        # Apply softmax to get attention weights
+        attention_weights = torch.softmax(scores, dim=-1)
+        
+        # Apply attention weights to value
+        attention_output = torch.matmul(attention_weights, value)
+        
+        # Reshape attention output and apply linear transformation
+        attention_output = attention_output.transpose(1, 2).contiguous().view(batch_size, -1, self.d_model)
+        output = self.fc(attention_output)
+        
+        return output
 
-        x = self.net(x)
-        x = x.view(N, M, -1)
-        if force_sigmoid:
-            rgb = torch.sigmoid(x[...,1:])
-        else:
-            rgb = torch.sigmoid(x[..., 1:])*(1 + 2*0.001) - 0.001 # Uses sigmoid clamping from MipNeRF
-        sigma = x[..., 0:1]
-        return {'rgb': rgb, 'sigma': sigma} # color和density
+# def func_x(x):
+#     return x
+# def func_pos(x, p_fn, freq):
+#     return p_fn(x*freq)
 
-    def set_force_sigmoid(self, state):
-        self.force_sigmoid = state
-        return self.force_sigmoid
+# # Positional encoding (section 5.1)
+# class Embedder:
+#     def __init__(self, **kwargs):
+#         self.kwargs = kwargs if kwargs!=None else {}
+        
+#     def create_embedding_fn(self):
+#         embed_fns = []
+#         d = self.kwargs['input_dims']
+#         out_dim = 0
+#         if self.kwargs['include_input']:
+#             embed_fns.append(partial(func_x))
+#             out_dim += d
+            
+#         max_freq = self.kwargs['max_freq_log2']
+#         N_freqs = self.kwargs['num_freqs']
+        
+#         if self.kwargs['log_sampling']:
+#             freq_bands = 2.**torch.linspace(0., max_freq, steps=N_freqs)
+#         else:
+#             freq_bands = torch.linspace(2.**0., 2.**max_freq, steps=N_freqs)
+            
+#         for freq in freq_bands:
+#             for p_fn in self.kwargs['periodic_fns']:
+#                 embed_fns.append(partial(func_pos, p_fn=p_fn, freq=freq))
+#                 out_dim += d
+                    
+#         self.embed_fns = embed_fns
+#         self.out_dim = out_dim
+        
+#     def embed(self, inputs, num_freqs, include_input=True,log_sampling=True):
+#         self.kwargs['input_dims'] = 3
+#         self.kwargs['include_input'] = include_input
+#         self.kwargs['max_freq_log2'] = num_freqs - 1 
+#         self.kwargs['num_freqs'] = num_freqs
+#         self.kwargs['periodic_fns'] = [torch.sin,torch.cos]
+#         self.kwargs['log_sampling'] = log_sampling
+#         self.create_embedding_fn()
+#         return torch.cat([fn(inputs) for fn in self.embed_fns], -1)
+
+
+# class CameraAttention(torch.nn.Module):
+#     def __init__(self, d_model, num_heads):
+#         super(CameraAttention, self).__init__()
+        
+#         self.d_model = d_model
+#         self.num_heads = num_heads
+#         self.head_dim = d_model // num_heads
+        
+#         self.query = nn.Linear((90+25+25), d_model) # front,back camera parameter; query point coordinate and query point direction
+#         self.key = nn.Linear(d_model, d_model)
+#         self.value = nn.Linear(d_model, d_model)
+        
+#         self.fc = nn.Linear(d_model, d_model) 
+#         self.embeder = Embedder()
+
+#         self.front_camera = torch.tensor(np.array([  1.      ,   0.      ,   0.      ,   0.      ,   0.      ,
+#         -1.      ,   0.      ,   0.      ,   0.      ,   0.      ,
+#         -1.      ,   1.      ,   0.      ,   0.      ,   0.      ,
+#          1.      , -57.294327,   0.      ,   0.5     ,   0.      ,
+#        -57.294327,   0.5     ,   0.      ,   0.      ,   1.      ]),dtype=torch.float)
+#         self.back_camera = torch.tensor(np.array([-1.0000000e+00,  0.0000000e+00,  1.2246469e-16, -1.2246469e-16,
+#         0.0000000e+00, -1.0000000e+00,  0.0000000e+00,  0.0000000e+00,
+#         1.2246469e-16,  0.0000000e+00,  1.0000000e+00, -1.0000000e+00,
+#         0.0000000e+00,  0.0000000e+00,  0.0000000e+00,  1.0000000e+00,
+#        -5.7294327e+01,  0.0000000e+00,  5.0000000e-01,  0.0000000e+00,
+#        -5.7294327e+01,  5.0000000e-01,  0.0000000e+00,  0.0000000e+00,
+#         1.0000000e+00]),dtype=torch.float)
+
+#     def forward(self, x, coordinate,direction):
+#         batch_size = x.shape[0] # 4*442368 = 1769472
+#         front_camera = self.front_camera.repeat((coordinate.shape[0],coordinate.shape[1],1)).to(x.device)
+#         back_camera = self.back_camera.repeat((coordinate.shape[0],coordinate.shape[1],1)).to(x.device)
+#         coordinate = self.embeder.embed(coordinate, 10) # [63]
+#         direction = self.embeder.embed(direction, 4) # [27]
+
+#         camera = torch.cat([coordinate,direction,front_camera,back_camera],-1)
+
+#         # Linear transformation of input to query, key, and value
+#         query = self.query(camera) # torch.Size([4, 442368, 16])
+#         key = self.key(x)
+#         value = self.value(x)
+        
+#         # Reshape query, key, and value for multi-head attention
+#         query = query.view(batch_size, -1, self.num_heads, self.head_dim).transpose(1, 2)
+#         key = key.view(batch_size, -1, self.num_heads, self.head_dim).transpose(1, 2)
+#         value = value.view(batch_size, -1, self.num_heads, self.head_dim).transpose(1, 2)
+        
+#         # Compute scores using dot product attention
+#         scores = torch.matmul(query, key.transpose(-2, -1)) / torch.sqrt(torch.tensor(self.head_dim).float())
+        
+#         # Apply softmax to get attention weights
+#         attention_weights = torch.softmax(scores, dim=-1)
+        
+#         # Apply attention weights to value
+#         attention_output = torch.matmul(attention_weights, value)
+        
+#         # Reshape attention output and apply linear transformation
+#         attention_output = attention_output.transpose(1, 2).contiguous().view(batch_size, -1, self.d_model)
+#         output = self.fc(attention_output)
+        
+#         return output
+
+# class MultiViewOSGDecoder(torch.nn.Module):
+#     def __init__(self, n_features, options):
+#         super().__init__()
+#         self.hidden_dim = 64
+#         self.force_sigmoid = False
+#         self.attention = DirectionAttention(n_features, num_heads=1)
+#         self.net = torch.nn.Sequential(
+#             FullyConnectedLayer(n_features, self.hidden_dim, lr_multiplier=options['decoder_lr_mul']),
+#             torch.nn.Softplus(),
+#             FullyConnectedLayer(self.hidden_dim, 1 + options['decoder_output_dim'], lr_multiplier=options['decoder_lr_mul'])
+#         )
+        
+#     def forward(self, front_sampled_features,back_sampled_features, ray_directions, force_sigmoid=None): # B, point_num, 3
+#         """
+#             front_sampled_features:
+#             back_sampled_features:
+#             sampled_features : B, point_num, 3
+#             ray_directions
+#         """
+#         # Aggregate features
+#         front_sampled_features = front_sampled_features.mean(1) # 
+#         back_sampled_features = back_sampled_features.mean(1)
+        
+#         N, M, C = front_sampled_features.shape
+#         front_sampled_features = front_sampled_features.view(N*M, C)
+#         front_sampled_features = self.attention(front_sampled_features,ray_directions)
+#         front_sampled_features = front_sampled_features.view(N, M, -1)
+#         N, M, C = back_sampled_features.shape
+#         back_sampled_features = back_sampled_features.view(N*M, C)
+#         back_sampled_features = self.attention(back_sampled_features, ray_directions)
+#         back_sampled_features = back_sampled_features.view(N, M, -1)
+#         x = front_sampled_features + back_sampled_features
+        
+#         # x = torch.cat([front_sampled_features,back_sampled_features],-1)
+#         force_sigmoid = force_sigmoid or self.force_sigmoid
+
+#         N, M, C = x.shape
+#         x = x.view(N*M, C)
+
+#         x = self.net(x)
+#         x = x.view(N, M, -1)
+#         if force_sigmoid:
+#             rgb = torch.sigmoid(x[...,1:])
+#         else:
+#             rgb = torch.sigmoid(x[..., 1:])*(1 + 2*0.001) - 0.001 # Uses sigmoid clamping from MipNeRF
+#         sigma = x[..., 0:1]
+#         return {'rgb': rgb, 'sigma': sigma} # color和density
+
+#     def set_force_sigmoid(self, state):
+#         self.force_sigmoid = state
+#         return self.force_sigmoid
 
 ######## pasting utils ########
 
