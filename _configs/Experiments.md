@@ -1,23 +1,13 @@
 
 
+# The experiments of NOVA-3D
 
-panic3d-anime-reconstruction
+## 1. data
 
-## download
-
-![](./supplementary/schematic.png)
-
-Download the `panic_data_models_merged.zip` from the project's [drive folder](https://drive.google.com/drive/folders/1Zpt9x_OlGALi-o-TdvBPzUPcvTc7zpuV?usp=share_link), and merge it with this repo's file structure.
+Download the `` from the project's [drive folder](), and merge it with this repo's file structure.
 
 There are several repos related to this work, roughly laid out according to the above schematic; please follow instructions in each to download
 
-* A) [panic3d-anime-reconstruction](https://github.com/ShuhongChen/panic3d-anime-reconstruction) (this repo): reconstruction models
-* B) [vtubers-dataset](https://github.com/ShuhongChen/vtubers-dataset): download 2D data
-* C) [vroid-dataset](https://github.com/ShuhongChen/vroid-dataset): download 3D data
-* D) [animerecon-benchmark](https://github.com/ShuhongChen/animerecon-benchmark): download 2D-3D paired evaluation dataset
-* C+D) [vroid_renderer](https://github.com/ShuhongChen/vroid_renderer): convert and render 3D models
-
-All the repos add to `./_data/lustrous` and share its file structure; we recommend making a folder on a large drive, then symlinking it as `./_data/lustrous` in each repo
 
 
 ## setup
@@ -56,13 +46,7 @@ Run this line to reproduce the best-result metrics from our paper.  There might 
     #  geom   f1@10  65.498    geom   f1@10  65.813 
 
 
-## training
-
-The training script is at `./_train/eg3dc/runs/ecrutileE_eclustrousC_n120/ecrutileE_eclustrousC_n120.sh`, which contains the command and hyperparameters used for our best model
-
- 119053
-
-## gameday training
+## NOVA-3D training
 panic-3d train 
 1. generate vroid rendering image feature:
 export PROJECT_DN=$(pwd)
@@ -82,13 +66,14 @@ python -m _train.swin_transformer.test
 
 
 ## nova-3d training
-0. environment setup
-mkdir /usr/local/dros/conda/envs/env_panohead
-cd /HOME/HOME/common_env/
-tar -zxvf panohead.tar.gz -C /usr/local/dros/conda/envs/env_panohead 
-conda activate env_panohead
-pip install timm
-mkdir -p /root/.cache/torch/hub/checkpoints/
+### 0. environment setup
+```
+mkdir /usr/local/dros/conda/envs/env_panohead  
+cd /HOME/HOME/common_env/  
+tar -zxvf panohead.tar.gz -C /usr/local/dros/conda/envs/env_panohead   
+conda activate env_panohead  
+pip install timm  
+mkdir -p /root/.cache/torch/hub/checkpoints/  
 cp ./_data/alexnet-owt-7be5be79.pth /root/.cache/torch/hub/checkpoints/
 cp ./_data/resnet50-0676ba61.pth /root/.cache/torch/hub/checkpoints/
 cp ./_data/deeplabv3_resnet101_coco-586e9e4e.pth /root/.cache/torch/hub/checkpoints/
@@ -100,7 +85,9 @@ conda activate env_panohead
 export PROJECT_DN=$(pwd)
 export MACHINE_NAME=gpuA100
 
-1. nova-3d train前预处理：generate human-vroid rendering image feature:
+```
+### 1. nova-3d train前预处理：generate human-vroid rendering image feature:
+```
 python -m _scripts.train.data_clean --dataset human_rutileEB --phase all
 all 11236 - 1013 = 10223
 train 8952 - 815 = 8137l
@@ -109,19 +96,19 @@ test 1113 - 97 = 1016
 nohup python -m _scripts.train.generate_human_feature >> generate_human_fature.out & 
 python -m _scripts.train.generate_human_ortho_mask
 nohup python -m _scripts.train.generate_human_rgb_mask >> generate_human_rgb_mask.out &
-
- 2. train 
-# baseline
-## panic3d baseline 已完成fid48
+```
+### 2. training scripts
+### baseline
+### panic3d baseline 已完成fid48
     2023.11.14
     nohup sh ./_train/eg3dc/runs/human_multi_panic3d/human_ecrutileE_eclustrousC_n120_4gpu.sh >> human_panic3d_baseline.out &
 
-## mv-panic3d 在跑
+### mv-panic3d 在跑
     2023.11.15
     nohup sh ./_train/eg3dc/runs/human_multi_panic3d/human_mv_panic3d.sh >> human_mv_panic3d_7319519094.out &
     nohup sh ./_train/eg3dc/runs/human_multi_panic3d/human_mv_panic3d_4gpu.sh >> human_mv_panic3d_4A100_2.out &
-# 主实验
-## mv-panic3d+mask+pat+attention 4gpu在跑
+### 主实验
+### mv-panic3d+mask+pat+attention 4gpu在跑
     2023.11.16
     nohup sh ./_train/eg3dc/runs/human_multi_panic3d/human_multi_view_panic3d_mask_encoder_attention_train.sh >> human_mv_panic3d_mask_pat_attention_735709060.out &
     nohup sh _train/eg3dc/runs/human_multi_panic3d/human_multi_view_panic3d_mask_encoder_attention_train_4gpu.sh  >> human_mv_panic3d_mask_pat_attention_4gpu2.out &
@@ -129,59 +116,61 @@ nohup python -m _scripts.train.generate_human_rgb_mask >> generate_human_rgb_mas
     2024.1.23
     nohup sh ./_configs/nova_human/human_nova_1gpu.sh >> human_nova_1gpu.out &
     nohup sh ./_configs/nova_human/human_nova.sh >> human_nova.out &
-# 消融实验
-## mv-panic3d+mask+pat+Noattention 4gpu在跑
+    nova deepspeed
+    nohup sh ./_configs/nova_human/human_nova_big_deepspeed.sh >> human_nova.out &
+    nova learn sampler
+    nova shuffle
+    
+### 消融实验
+### mv-panic3d+mask+pat+Noattention 4gpu在跑
     2023.11.16
     nohup sh ./_train/eg3dc/runs/human_multi_panic3d/human_multi_view_panic3d_mask_encoder_Noattention_train_4gpu.sh >> human_mv_panic3d_mask_pat_cat_4A100.out &
-## mv-panic3d+mask+NoPat+attention 4gpu高速缓存在跑
+### mv-panic3d+mask+NoPat+attention 4gpu高速缓存在跑
     nohup sh ./_train/eg3dc/runs/human_multi_panic3d/human_mv_panic3d_mask_Noencoder_attention_train_4gpu.sh >> human_mv_panic3d_mask_Nopat_atten_4A100_3.out &
-## mv-panic3d+Nomask+Pat+attention 4gpu完成fid133
+### mv-panic3d+Nomask+Pat+attention 4gpu完成fid133
     nohup sh ./_train/eg3dc/runs/human_multi_panic3d/human_mv_panic3d_Nomask_encoder_attention_train_4gpu.sh >> human_mv_panic3d_Nomask_pat_atten_4A100_4.out &
-# NOVA B
+### NOVA B
     nohup sh ./_train/eg3dc/runs/humanB_multi_panic3d/humanB_train_4gpu.sh >> humanB_NOVA_4gpu_3.out &
-# NOVA-deepspeed
+### NOVA-deepspeed
     ./_train/eg3dc/runs/human_multi_panic3d/human_nova_big_deepspeed.sh
-3. test
+### 3. inference
+```
 python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --inferquery human human_ecrutileE_eclustrousC_n120-00000-000040 
 
 python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_multi_panic3d-00056-000040
-# best, mvpanic3d_mask_encoder_attention
-nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_multi_panic3d-00057-000880 &
-fid66   nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_mv_panic3d_mask_encoder_attention-00001-000080 >> generate_best.out &
-fid60   nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_mv_panic3d_mask_encoder_attention-00003-000040 >> best.out &
-
-
-# baseline
-nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator --dataset human --inferquery human_ecrutileE_eclustrousC_n120-00002-000240 >> generate_baseline.out &
-
-# mv-panic3d
-nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator --dataset human --inferquery human_mv_ecrutileE_eclustrousC_n120-00000-000480 &
-nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator --dataset human --inferquery human_mv_ecrutileE_eclustrousC_n120-00003-000320 &
-
-# 消融Noencoder
-export CUDA_VISIBLE_DEVICES=1
-nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_mv_panic3d_mask_Noencoder_attention-00001-000080 >> generate_ablation_Noencoder.out &
-# 消融Noattention
-nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v0 --dataset human --inferquery human_mv_panic3d_mask_encoder_concat-00001-000120 >> generate_ablation_Noattention.out &
-
-human_measure:
-python -m _scripts.eval.human_measure --inferquery human_multi_panic3d-00057-000880
-python -m _scripts.eval.human_measure --inferquery human_ecrutileE_eclustrousC_n120-00002-000240
-nohup python -m _scripts.eval.human_measure --inferquery human_mv_ecrutileE_eclustrousC_n120-00000-000480 >> measure_mv_panic3d.out & 
-nohup python -m _scripts.eval.human_measure --inferquery human_mv_panic3d_mask_encoder_attention-00003-000040 >> measure_best.out &
-
-nohup python -m _scripts.eval.human_measure --inferquery human_mv_panic3d_mask_Noencoder_attention-00001-000080 >> measure_ablation_noEncoder.out &
-
-nohup python -m _scripts.eval.human_measure --inferquery human_mv_panic3d_mask_encoder_concat-00001-000120  >> measure_ablation_noAttention.out &
-
 ```
-    
-    opts.data_class = f'_train.eg3dc.datasets.{opts.name.split("_")[0]}.DatasetWrapper'
-```
+### best, mvpanic3d_mask_encoder_attention
+    nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_multi_panic3d-00057-000880 &
+    fid66   nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_mv_panic3d_mask_encoder_attention-00001-000080 >> generate_best.out &
+    fid60   nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_mv_panic3d_mask_encoder_attention-00003-000040 >> best.out &
 
-[Title](_train/eg3dc/runs/ecrutileE_eclustrousC_n120/00001/network-snapshot-001360.pkl)
 
-## gameday test
+### baseline
+    nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator --dataset human --inferquery human_ecrutileE_eclustrousC_n120-00002-000240 >> generate_baseline.out &
+
+### mv-panic3d
+    nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator --dataset human --inferquery human_mv_ecrutileE_eclustrousC_n120-00000-000480 &
+    nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator --dataset human --inferquery human_mv_ecrutileE_eclustrousC_n120-00003-000320 &
+
+### 消融Noencoder
+    export CUDA_VISIBLE_DEVICES=1
+    nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_mv_panic3d_mask_Noencoder_attention-00001-000080 >> generate_ablation_Noencoder.out &
+### 消融Noattention
+    nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v0 --dataset human --inferquery human_mv_panic3d_mask_encoder_concat-00001-000120 >> generate_ablation_Noattention.out &
+
+### 4. Metrics
+    human_measure:
+    python -m _scripts.eval.human_measure --inferquery human_multi_panic3d-00057-000880
+    python -m _scripts.eval.human_measure --inferquery human_ecrutileE_eclustrousC_n120-00002-000240
+    nohup python -m _scripts.eval.human_measure --inferquery human_mv_ecrutileE_eclustrousC_n120-00000-000480 >> measure_mv_panic3d.out & 
+    nohup python -m _scripts.eval.human_measure --inferquery human_mv_panic3d_mask_encoder_attention-00003-000040 >> measure_best.out &
+
+    nohup python -m _scripts.eval.human_measure --inferquery human_mv_panic3d_mask_Noencoder_attention-00001-000080 >> measure_ablation_noEncoder.out &
+
+    nohup python -m _scripts.eval.human_measure --inferquery human_mv_panic3d_mask_encoder_concat-00001-000120  >> measure_ablation_noAttention.out &
+
+
+## NOVA Head inference
 python -m _scripts.eval.mv_generate
 python -m _scripts.eval.front_generate
 ### NOVA Head
