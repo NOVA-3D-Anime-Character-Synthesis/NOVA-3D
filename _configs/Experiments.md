@@ -96,6 +96,11 @@ mkdir -p ~/.keras/models/
 cp ./_data/inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5 ~/.keras/models/
 mkdir -p ~/.cache/clip/
 cp ./_data/ViT-B-32.pt ~/.cache/clip/
+
+mkdir -p ./_data/lustrous/renders/
+nohup cp -r ./_data/lustrous/renders/human_rutileE/ /root/workspace/_data/lustrous/renders/ > gpu2_1.out &
+cp -r ./_data/lustrous/subsets/ /root/workspace/_data/lustrous/ 
+
 conda activate env_panohead
 export PROJECT_DN=$(pwd)
 export MACHINE_NAME=gpuA100
@@ -129,6 +134,7 @@ nohup python -m _scripts.train.generate_human_rgb_mask >> generate_human_rgb_mas
     2024.1.23
     nohup sh ./_configs/nova_human/human_nova_1gpu.sh >> human_nova_1gpu.out &
     nohup sh ./_configs/nova_human/human_nova.sh >> human_nova.out &
+    nohup sh ./_configs/nova_human/human_nova_big.sh >> human_nova_big.out &
 # 消融实验
 ## mv-panic3d+mask+pat+Noattention 4gpu在跑
     2023.11.16
@@ -193,6 +199,7 @@ zip -r ./panic3d-anime-reconstruction_total.zip ./ &
 nohup unzip -d ./multi_view_panic3d/ panic3d_data_total_v2.zip &
 [1] 27209
 2024.1.25
+
 mkdir -p ./_data/lustrous/renders/
 nohup cp -r ./_data/lustrous/renders/human_rutileE/ /root/workspace/_data/lustrous/renders/ > gpu2_1.out &
 cp -r ./_data/lustrous/subsets/ /root/workspace/_data/lustrous/ 
