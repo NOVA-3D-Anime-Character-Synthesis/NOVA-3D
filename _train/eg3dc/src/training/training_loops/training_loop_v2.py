@@ -295,10 +295,10 @@ def training_loop(
     #         {k: v[i] for k,v in grid_cond.items()}
     #         for i in range(len(list(grid_cond.values())[0]))
     #     ]
-        # print(len(grid_c))
-        # print(len(grid_z))
-        # print(len(grid_cond))
-        # exit(0)
+    #     print(len(grid_c))
+    #     print(len(grid_z))
+    #     print(len(grid_cond))
+    #     exit(0)
 
     # Initialize logs.
     if rank == 0:
@@ -494,19 +494,19 @@ def training_loop(
                 with open(snapshot_pkl, 'wb') as f:
                     pickle.dump(snapshot_data, f)
 
-        # Evaluate metrics.
-        if (snapshot_data is not None) and (len(metrics) > 0):
-            if rank == 0:
-                print(run_dir)
-                print('Evaluating metrics...')
-            for metric in metrics:
-                print(metric)
-                result_dict = metric_main.calc_metric(metric=metric, G=snapshot_data['G_ema'],
-                    dataset_kwargs=training_set_kwargs, num_gpus=num_gpus, rank=rank, device=device)
-                if rank == 0:
-                    metric_main.report_metric(result_dict, run_dir=run_dir, snapshot_pkl=snapshot_pkl)
-                stats_metrics.update(result_dict.results)
-        del snapshot_data # conserve memory
+        # # Evaluate metrics.
+        # if (snapshot_data is not None) and (len(metrics) > 0):
+        #     if rank == 0:
+        #         print(run_dir)
+        #         print('Evaluating metrics...')
+        #     for metric in metrics:
+        #         print(metric)
+        #         result_dict = metric_main.calc_metric(metric=metric, G=snapshot_data['G_ema'],
+        #             dataset_kwargs=training_set_kwargs, num_gpus=num_gpus, rank=rank, device=device)
+        #         if rank == 0:
+        #             metric_main.report_metric(result_dict, run_dir=run_dir, snapshot_pkl=snapshot_pkl)
+        #         stats_metrics.update(result_dict.results)
+        # del snapshot_data # conserve memory
 
         # Collect statistics.
         for phase in phases:

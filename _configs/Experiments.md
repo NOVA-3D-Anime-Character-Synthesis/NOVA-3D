@@ -149,7 +149,7 @@ python -m _scripts.eval.human_generate --generator_module training.triplane.TriP
 nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_multi_panic3d-00057-000880 &
 fid66   nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_mv_panic3d_mask_encoder_attention-00001-000080 >> generate_best.out &
 fid60   nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_mv_panic3d_mask_encoder_attention-00003-000040 >> best.out &
-
+nova    nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator_v1 --dataset human --inferquery human_nova-00007-000680 >> nova.out &
 
 # baseline
 nohup python -m _scripts.eval.human_generate --generator_module training.triplane.TriPlaneGenerator --dataset human --inferquery human_ecrutileE_eclustrousC_n120-00002-000240 >> generate_baseline.out &
