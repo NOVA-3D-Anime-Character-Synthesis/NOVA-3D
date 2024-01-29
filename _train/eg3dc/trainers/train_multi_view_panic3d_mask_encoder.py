@@ -156,7 +156,7 @@ def parse_comma_separated_list(s):
 @click.option('--encoder_module', type=str, required=True)
 @click.option('--discriminator_module', type=str, required=True)
 @click.option('--cond_mode', type=str, required=True)
-@click.option('--multi_view_cond_mode', type=str, default=None, required=True)
+@click.option('--multi_view_cond_mode', type=str, default=None)
 @click.option('--encoder_config',type=str,  metavar="FILE", help='path to config file', default='/HOME/gameday/gameday-3d-human-reconstruction-multi_view_panic3d-/_train/swin_transformer/configs/swinv2.yaml')
 
 @click.option('--lambda_gcond_lpips', type=float, default=10.0, required=True)

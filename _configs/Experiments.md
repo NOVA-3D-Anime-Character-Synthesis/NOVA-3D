@@ -84,6 +84,8 @@ cp ./_data/ViT-B-32.pt ~/.cache/clip/
 
 mkdir -p ./_data/lustrous/renders/
 nohup cp -r ./_data/lustrous/renders/human_rutileE/ /root/workspace/_data/lustrous/renders/ > gpu2_1.out &
+mkdir -p ./_data/eg3d/networks/
+cp ./_data/eg3d/networks/ffhq512-128.pkl /root/workspace/_data/eg3d/networks/
 cp -r ./_data/lustrous/subsets/ /root/workspace/_data/lustrous/ 
 
 conda activate env_panohead
@@ -112,6 +114,9 @@ nohup python -m _scripts.train.generate_human_rgb_mask >> generate_human_rgb_mas
     2023.11.15
     nohup sh ./_train/eg3dc/runs/human_multi_panic3d/human_mv_panic3d.sh >> human_mv_panic3d_7319519094.out &
     nohup sh ./_train/eg3dc/runs/human_multi_panic3d/human_mv_panic3d_4gpu.sh >> human_mv_panic3d_4A100_2.out &
+### 验证idea
+    2024.1.27 以后视图输入panic3d具有bias，会把输入的特征直接用在前视图中。
+    nohup sh ./_configs/nova_head/single_back_panic3d_1gpu.sh &
 ### 主实验
 ### mv-panic3d+mask+pat+attention 4gpu在跑
     2023.11.16

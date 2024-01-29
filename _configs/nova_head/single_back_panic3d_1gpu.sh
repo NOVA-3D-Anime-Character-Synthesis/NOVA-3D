@@ -13,20 +13,25 @@
 # && CUDA_VISIBLE_DEVICES=4,5,6,7 python3 -m _train.eg3dc.trainers.train_eclustrousC \
 # && CUDA_VISIBLE_DEVICES=0,1,2,3 python3 -m _train.eg3dc.trainers.train_eclustrousC \
 cd $PROJECT_DN \
-&& CUDA_VISIBLE_DEVICES=0,1 python3 -m _train.eg3dc.trainers.train_eclustrousC \
+&& CUDA_VISIBLE_DEVICES=0 python3 -m _train.eg3dc.trainers.train_multi_view_panic3d_mask_encoder \
     \
-    --name=ecrutileE_panic3d_back \
-    --training_loop_version=training_loop_v2 \
-    --loss_module=training.loss.StyleGAN2LossOrthoCondB \
+    --name=human_panic3d_back \
+    --training_loop_version=training_loop_v1 \
+    --loss_module=training.loss.StyleGAN2LossMultiOrthoCond \
+    --generator_module=training.triplane.TriPlaneGenerator_v0 \
+    --generator_backbone=training.generator.Generator_back \
+    --discriminator_module=training.dual_discriminator.DualDiscriminator \
     --cond_mode=ortho_front.cond_img_norm_4.concatfront.crossavg_4.reschonk_add_512.inj_6b_4 \
-    --data_subset=rutileEB \
+    --encoder_module=None \
+    --data_subset=human_rutileEB \
     \
-    --gpus=2 \
-    --batch=8 \
+    --gpus=1 \
+    --batch=16 \
     --kimg=25000 \
     --snap=10 \
     \
     --resume_discrim=./_data/eg3d/networks/ffhq512-128.pkl \
+    --resume=None \
     \
     --triplane_depth=3 \
     --triplane_width=16 \
