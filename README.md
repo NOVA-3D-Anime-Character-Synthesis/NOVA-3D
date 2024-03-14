@@ -3,7 +3,7 @@ Official PyTorch implementation of **NOVA-3D**
 ![preface](figs/preface.png)
 <center style="font-size:14px;color:#C0C0C0;text-decoration:underline">Left: NOVA-3D achieves full-body anime character reconstruction from non-overlapped views. Right: The excellent results of NOVA-3D on head reconstruction of anime characters, with exquisite texture details, clear contours as well as 3D consistency.</center> 
 
-[Project Page](https://nova-3d-anime-character-synthesis.github.io/NOVA-3D/) \| [Dataset](https://www.alipan.com/s/FqiHyraNCZd)
+[Project Page](http://124.70.164.141:8083/) \| [Dataset](https://www.alipan.com/s/FqiHyraNCZd)
 
 ## Abstract
 
@@ -15,7 +15,8 @@ In the animation industry, 3D modelers typically rely on front and back non-over
 </div>
 <p align="center">These two are 360-degree displays of the head of 3D anime character model.</p>
 <div align="center">
-   <img src="figs/body2.gif"  width="300"><img src="figs/body3.gif" width="300">
+   <img src="figs/gif1.gif"  width="300"><img src="figs/gif2.gif" width="300">
+   <img src="figs/gif3.gif"  width="300"><img src="figs/gif4.gif" width="300">
 </div>
 <p align="center">These two are 360-degree displays of the full-body of 3D anime character model.</p>
 
